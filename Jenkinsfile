@@ -13,15 +13,15 @@ pipeline {
             }
         }
 
-        stage('Snyk Security Scan') {
+        stage('Snyk Scan') {
             steps {
                 bat 'snyk test'
             }
         }
 
-        stage('Pipeline Complete') {
+        stage('Deploy') {
             steps {
-                echo 'DevSecOps Pipeline Successful'
+                bat 'pm2 restart secure-notes-app'
             }
         }
     }
