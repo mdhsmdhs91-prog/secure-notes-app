@@ -1,32 +1,44 @@
 pipeline {
-    agent any
+agent any
 
-    tools {
-        nodejs 'NodeJS'
+```
+tools {
+    nodejs 'NodeJS'
+}
+
+stages {
+
+    stage('Install Dependencies') {
+        steps {
+            bat 'npm install'
+        }
     }
 
-    stages {
-
-        stage('Install Dependencies') {
-            steps {
-                bat 'npm install'
-            }
-        }
-
-        stage('Snyk Scan') {
-            steps {
-                bat 'snyk test'
-            }
-        }
-        stage('OWASP ZAP Scan') {
-    steps {
-        bat '"C:\\Program Files\\OWASP\\Zed Attack Proxy\\zap.bat"'
-          }
-        }
-        stage('Deploy') {
-            steps {
-                bat 'pm2 restart secure-notes-app'
+    stage('SonarQube Scan') {
+        steps {
+            withSonarQubeEnv('SonarQube') {
+                bat '''
+                sonar-scanner ^
+                -Dsonar.projectKey=secure-notes ^
+                -Dsonar.sources=. ^
+                -Dsonar.host.url=http://localhost:9000
+                '''
             }
         }
     }
+
+    stage('Snyk Scan') {
+        steps {
+            bat 'snyk test'
+        }
+    }
+
+    stage('Deploy') {
+        steps {
+            bat 'pm2 restart secure-notes-app'
+        }
+    }
+}
+```
+
 }
