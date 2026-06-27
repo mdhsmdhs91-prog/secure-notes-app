@@ -17,10 +17,9 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQube') {
                     bat '''
-                    sonar-scanner ^
+                    "C:\\sonar-scanner-cli-8.0.1.6346-windows-x64\\sonar-scanner-8.0.1.6346-windows-x64\\bin\\sonar-scanner.bat" ^
                     -Dsonar.projectKey=secure-notes ^
-                    -Dsonar.sources=. ^
-                    -Dsonar.host.url=http://localhost:9000
+                    -Dsonar.sources=.
                     '''
                 }
             }
@@ -36,6 +35,18 @@ pipeline {
             steps {
                 bat 'pm2 restart secure-notes-app'
             }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline execution completed.'
+        }
+        success {
+            echo 'Build Successful!'
+        }
+        failure {
+            echo 'Build Failed!'
         }
     }
 }
